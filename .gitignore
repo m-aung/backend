@@ -1,4 +1,4 @@
 .http
-requirements.txt
 notes.md
 venv
+.env
