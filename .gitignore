@@ -1,4 +1,4 @@
 .http
 notes.md
 venv
-local.env
+.env

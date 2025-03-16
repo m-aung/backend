@@ -1,6 +1,9 @@
 import os
 import re
 from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
+
+load_dotenv()
 
 ENV_CONNECTIONS = {
     "dev": os.environ.get("POSTGRESQL_CONNECTION_DEV"),
@@ -36,5 +39,10 @@ def execute_schema_from_file(filepath: str):
             connection.execute(text(stmt))
 
 if __name__ == "__main__":
-    execute_schema_from_file("./database/create-tables.sql")
-    print("Database schema setup complete.")
+    try:
+        execute_schema_from_file("./database/create-tables.sql")
+        print("Database schema setup complete.")
+    finally:
+        # Dispose of the engine to close all connections.
+        engine.dispose()
+        print("Database connection closed.")
