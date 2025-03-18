@@ -19,7 +19,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 origins = [
-    "http://localhost:3000", # for react app
+    "http://localhost:5173", # for react app
 ]
 
 app.add_middleware(

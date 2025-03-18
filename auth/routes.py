@@ -21,17 +21,27 @@ def sign_up(user: CreateUser, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    # Hash the password
     user.password_hash = hash_password(user.password_hash)
+    
+    # Insert the new user into the database
     query = text("""
         INSERT INTO users (first_name, last_name, email, phone, role, password_hash)
         VALUES (:first_name, :last_name, :email, :phone, :role, :password_hash)
         RETURNING id, first_name, last_name, email, phone, role, created_at
-    """) 
+    """)
     result = db.execute(query, user.model_dump())
+    
+    # Commit the transaction
+    db.commit()
+    
+    # Fetch the newly created user
     new_user = result.fetchone()
     if new_user is None:
         raise HTTPException(status_code=500, detail="Failed to create user")
-    return format_date_and_serialize(new_user,["id", "first_name", "last_name", "email", "phone", "role", "created_at"])
+    
+    # Return the serialized user data
+    return format_date_and_serialize(new_user, ["id", "first_name", "last_name", "email", "phone", "role", "created_at"])
 
 @router.post("/token")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
