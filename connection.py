@@ -1,5 +1,7 @@
 import os
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -24,7 +26,18 @@ print(f"Connecting to {env} environment with: {conn_str}")
 # Create SQLAlchemy engine.
 engine = create_engine(conn_str, echo=True)
 
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 def shutdown_db_conn():
-    """Close database all connections."""
-    engine.dispose()
-    print("Database connection closed.")
+    """Dispose of the database engine to close all connections."""
+    if 'engine' in globals() and engine:
+        engine.dispose()
+        print(f"Database connections for {env} environment disposed.")

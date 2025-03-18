@@ -6,3 +6,7 @@ psycopg2
 dotenv
 pydantic[email]
 httpx
+python-jose
+python-dotenv
+passlib
+python-multipart
